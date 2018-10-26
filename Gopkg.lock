@@ -2,12 +2,85 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:dea0dc25eb769ba25e1680308d7912710a83fb8706dcbfc85f5d502643bb9701"
+  name = "bitbucket.org/seibert-media/events"
+  packages = [
+    "pkg/api",
+    "pkg/api/middlewares",
+    "pkg/service",
+    "pkg/version",
+  ]
+  pruneopts = "UT"
+  revision = "b769fe9bc16a3586cebbf741ac49dc21130284b8"
+
+[[projects]]
+  branch = "master"
+  digest = "1:04f4cdd26a3726d598e49c5aeafa5837ce40054f840f73046c5c288c3b003405"
+  name = "github.com/Obaied/RAKE.Go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2f90f6810f3e62f208d2d5452c8f882d2b45cd1e"
+
+[[projects]]
+  digest = "1:13049bc67a911ab6a7f782f1b00ea9c8f5c7acd3795811993ed99fe6a0f8b462"
+  name = "github.com/blendle/zapdriver"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "87f0bcb9f9e50b5423581426cc576b6ced81482d"
+  version = "v1.1.4"
+
+[[projects]]
+  digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
+  name = "github.com/certifi/gocertifi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "deb3ae2ef2610fde3330947281941c562861188b"
+  version = "2018.01.18"
+
+[[projects]]
   digest = "1:e47d51dab652d26c3fba6f8cba403f922d02757a82abdc77e90df7948daf296e"
   name = "github.com/deckarep/golang-set"
   packages = ["."]
   pruneopts = "UT"
   revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
   version = "v1.7.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e51147e761aa8b6769e05e586c7012eb221c8be72fbc68a4340a53b974e67b9f"
+  name = "github.com/getsentry/raven-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3033899c76deb3fb6570d9c4074d00443aeab88f"
+
+[[projects]]
+  digest = "1:a9fe0f8ff72c388d0128e88ce5f3c27d37dcd0950acd7cdb8323555f12463396"
+  name = "github.com/go-chi/chi"
+  packages = [
+    ".",
+    "middleware",
+  ]
+  pruneopts = "UT"
+  revision = "b5294d10673813fac8558e7f47242bc9e61b4c25"
+  version = "v3.3.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:6a21dcd5e20c3b24f7c8577cf6c7eb3601847be026ed5d3677ac37d00558c218"
+  name = "github.com/kelseyhightower/envconfig"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b1e695040f9727934c457f54e258740bb474cc65"
+  source = "github.com/seibert-media/envconfig"
+
+[[projects]]
+  branch = "master"
+  digest = "1:53f75a42d9a187a12e5dc577f2c8456a32b2433725036bb9dc057d035e0c9ad4"
+  name = "github.com/kolide/kit"
+  packages = ["version"]
+  pruneopts = "UT"
+  revision = "0c28f72eb2b04f8189b18f94f82361f6b3d5d299"
 
 [[projects]]
   digest = "1:b3126a5e167f640c5943eb641489baec30bbbb995a9741b905d7c05239412d4b"
@@ -24,6 +97,64 @@
   pruneopts = "UT"
   revision = "1bf9dbcd8cbe1fdb75add3785b1d4a9a646269ab"
   version = "0.3.0"
+
+[[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
+  branch = "stackdriver"
+  digest = "1:bbbaf86a3309845f043aa29efa8cde6605ae12cd6da3e8c75b9c8a5658e6e286"
+  name = "github.com/seibert-media/golibs"
+  packages = ["log"]
+  pruneopts = "UT"
+  revision = "45a16cdeea92860b846f8e7200131cb514b2f94f"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8d251c8804ca36b6703b5dcb75f33c62e77afcd3d7ae12bcac76a86e739128b1"
+  name = "github.com/tchap/zapext"
+  packages = [
+    "types",
+    "zapsentry",
+  ]
+  pruneopts = "UT"
+  revision = "e61c0c8823393722ae09ce0faee42fa177088a4b"
+
+[[projects]]
+  digest = "1:3c1a69cdae3501bf75e76d0d86dc6f2b0a7421bc205c0cb7b96b19eed464a34d"
+  name = "go.uber.org/atomic"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1ea20fb1cbb1cc08cbd0d913a96dead89aa18289"
+  version = "v1.3.2"
+
+[[projects]]
+  digest = "1:60bf2a5e347af463c42ed31a493d817f8a72f102543060ed992754e689805d1a"
+  name = "go.uber.org/multierr"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3c4937480c32f4c13a875a1829af76c98ca3d40a"
+  version = "v1.1.0"
+
+[[projects]]
+  digest = "1:c52caf7bd44f92e54627a31b85baf06a68333a196b3d8d241480a774733dcf8b"
+  name = "go.uber.org/zap"
+  packages = [
+    ".",
+    "buffer",
+    "internal/bufferpool",
+    "internal/color",
+    "internal/exit",
+    "zapcore",
+  ]
+  pruneopts = "UT"
+  revision = "ff33455a0e382e8a81d14dd7c922020b6b5e7982"
+  version = "v1.9.1"
 
 [[projects]]
   branch = "master"
@@ -68,6 +199,15 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["gopkg.in/jdkato/prose.v2"]
+  input-imports = [
+    "bitbucket.org/seibert-media/events/pkg/api",
+    "bitbucket.org/seibert-media/events/pkg/service",
+    "github.com/Obaied/RAKE.Go",
+    "github.com/go-chi/chi",
+    "github.com/pkg/errors",
+    "github.com/seibert-media/golibs/log",
+    "go.uber.org/zap",
+    "gopkg.in/jdkato/prose.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

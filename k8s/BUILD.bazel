@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "deploy.yaml",
+    "service.yaml",
+])
+
+load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
+load(
+    "//:helpers/k8s.bzl",
+    manifest = "template_manifest",
+)
+
+manifest(
+    name = "manifest_ingress",
+    template = "ingress.yaml",
+)
+
+k8s_deploy(
+    name = "dev_ingress",
+    template = ":manifest_ingress",
+)

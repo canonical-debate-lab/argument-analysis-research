@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["init.go"],
+    importpath = "bitbucket.org/seibert-media/events/pkg/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/version:go_default_library",
+        "//vendor/github.com/kelseyhightower/envconfig:go_default_library",
+        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
+    ],
+)

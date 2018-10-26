@@ -1,0 +1,26 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_push")
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_bundle")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
+load(
+    ":helpers/docker.bzl",
+    docker_tags = "docker_tags",
+    tags = "tags",
+)
+
+gazelle(
+    name = "gazelle",
+    external = "vendored",
+    prefix = "github.com/canonical-debate-lab/argument-analysis-research",
+)
+
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+
+k8s_objects(
+    name = "k8s_dev",
+    objects = [
+        "//k8s:dev_ingress",
+        "//cmd/api:dev",
+    ],
+)

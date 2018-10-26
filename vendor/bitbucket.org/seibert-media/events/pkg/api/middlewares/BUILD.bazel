@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "dev.go",
+        "logging.go",
+        "status.go",
+    ],
+    importpath = "bitbucket.org/seibert-media/events/pkg/api/middlewares",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
+        "//vendor/go.uber.org/zap:go_default_library",
+    ],
+)

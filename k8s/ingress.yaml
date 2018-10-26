@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: research
+  labels:
+    component: research
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - host: research.democracy.ovh
+    http:
+      paths:
+      - path: /analyze
+        backend:
+          serviceName: api
+          servicePort: 80
+

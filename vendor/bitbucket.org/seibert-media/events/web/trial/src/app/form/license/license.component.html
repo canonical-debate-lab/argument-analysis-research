@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-title>Subscription</mat-card-title>
+  <mat-card-subtitle>
+    Please provide some basic contact information so we can stay in touch.<br>
+    If any problems occur while creating your trial, we will use those details to get you started quickly.
+  </mat-card-subtitle>
+  <mat-card-content>
+    <form [formGroup]="form" fxLayout="column" fxLayoutGap="1em">
+      <div fxLayout.gt-xs="row" fxLayoutGap="1em">
+
+        <mat-form-field class="full-width">
+          <mat-label>{{ 'license' | translate }}</mat-label>
+          <input matInput type="text" formControlName="license" placeholder="G Suite Business" required>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>{{ 'size' | translate }}</mat-label>
+          <input matInput type="number" formControlName="size" placeholder="42" required>
+        </mat-form-field>
+
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-card-actions fxLayout="row" fxLayoutAlign="end center">
+    <button mat-button [routerLink]="['/form/user']" color="accent">{{ 'back' | translate }}</button>
+    <button mat-raised-button [routerLink]="['/form/subscription']" color="accent">{{ 'next' | translate }}</button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["version.go"],
+    importpath = "bitbucket.org/seibert-media/events/pkg/version",
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.svcName": "{STABLE_NAME}",
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.version": "{STABLE_VERSION}",
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.branch": "{STABLE_BRANCH}",
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.revision": "{STABLE_REVISION}",
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.buildUser": "{STABLE_USER}",
+        "bitbucket.org/seibert-media/events/vendor/github.com/kolide/kit/version.goVersion": "{STABLE_GOVERSION}",
+    },
+    deps = [
+        "//vendor/github.com/kolide/kit/version:go_default_library",
+        "//vendor/go.uber.org/zap:go_default_library",
+        "//vendor/go.uber.org/zap/zapcore:go_default_library",
+    ],
+)

@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["segmenter.go"],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/cmd/segmenter",
+    visibility = ["//visibility:private"],
+    deps = ["//pkg/document:go_default_library"],
+)
+
+go_binary(
+    name = "segmenter",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{NAME}"
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        component: "{NAME}"
+    spec:
+      containers:
+      - name: service
+        image: eu.gcr.io/kwiesmueller-development/{NAME}:dev
+        imagePullPolicy: Always
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: PROJECT
+          value: kwiesmueller-development
+        - name: IS_PROD
+          value: "false"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+

@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["document.go"],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/document",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/Obaied/RAKE.Go:go_default_library",
+        "//vendor/gopkg.in/jdkato/prose.v2:go_default_library",
+    ],
+)
