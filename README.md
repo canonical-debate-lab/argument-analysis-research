@@ -18,6 +18,44 @@ To run it simply provide your string as first argument:
 go run cmd/segmenter/*.go "Hello darkness my old friend"
 ```
 
+## Argument Analysis API
+
+Some parts of this repo get combined into a simple JSON API for use in other places (like Colaboratory).
+This currently includes segmenting and keyword extraction.
+
+To analyze a piece of text send it to the API Server (dev running at https://research.democracy.ovh/analyze) as a POST in the format of: 
+
+```json
+{
+  "input": "Hello darkness my old friend"
+}
+```
+
+This will apply the segmenting mentioned above and then extract keywords by applying RAKE.
+
+The response will look like this:
+
+```json
+{
+  "content": "Hello darkness my old friend",
+  "segments": [
+    {
+      "text": "Hello darkness my old friend",
+      "keywords": [
+        {
+          "key": "old friend",
+          "value": 4
+        },
+        {
+          "key": "darkness",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## Contributing
 
 This repository is part of a 2 week research project.
