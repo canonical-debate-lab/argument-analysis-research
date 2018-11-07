@@ -1,20 +1,24 @@
 package document
 
 import (
-	"github.com/Obaied/RAKE.Go"
+	"context"
+
+	"github.com/pkg/errors"
+	"github.com/seibert-media/golibs/log"
+	"go.uber.org/zap"
 	"gopkg.in/jdkato/prose.v2"
 )
 
 // Document starts with Content which is then analyzed
 type Document struct {
 	Content  string     `json:"content"`
-	Segments []*Segment `json:"segments"`
+	Segments []*Segment `json:"segments,omitempty"`
 }
 
 // Segment of a Document
 type Segment struct {
 	Text     string     `json:"text"`
-	Keywords []*Keyword `json:"keywords"`
+	Keywords []*Keyword `json:"keywords,omitempty"`
 }
 
 // Keyword as found inside a Segment
@@ -23,8 +27,12 @@ type Keyword struct {
 	Value float64 `json:"value"`
 }
 
-// New takes the input string and runs basic analysis
-func New(from string) (*Document, error) {
+// Step taking a segment and returning updated segment or error
+type Step func(Segment) (Segment, error)
+
+// New takes the input string for segmenting and
+// runs all segments through the steps before returning the final document
+func New(ctx context.Context, from string, steps ...Step) (*Document, error) {
 	doc, err := prose.NewDocument(from)
 	if err != nil {
 		return nil, err
@@ -33,22 +41,19 @@ func New(from string) (*Document, error) {
 	result := &Document{Content: from}
 
 	for _, s := range doc.Sentences() {
-		seg := &Segment{Text: s.Text}
+		seg := Segment{Text: s.Text}
 
-		var keywords []*Keyword
-		for _, k := range rake.RunRake(s.Text) {
-			keywords = append(
-				keywords,
-				&Keyword{
-					Key:   k.Key,
-					Value: k.Value,
-				})
+		for i, step := range steps {
+			seg, err = step(seg)
+			if err != nil {
+				log.From(ctx).Error("applying step", zap.Int("step", i), zap.String("segment", s.Text))
+				return nil, errors.Wrapf(err, "applying step %d", i)
+			}
 		}
 
-		seg.Keywords = keywords
 		result.Segments = append(
 			result.Segments,
-			seg,
+			&seg,
 		)
 	}
 

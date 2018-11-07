@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: adw
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        component: adw
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: component
+                operator: In
+                values:
+                - adw
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: service
+        image: eu.gcr.io/kwiesmueller-development/adw:dev
+        imagePullPolicy: Always
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: PROJECT
+          value: kwiesmueller-development
+        - name: IS_PROD
+          value: "false"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 500Mi
+          requests:
+            cpu: 250m
+            memory: 500Mi

@@ -6,6 +6,9 @@ client_secret.json
 .credentials
 debug
 files/source-context.json
+bazel*
+.project
+resources/signatures
 bazel
 bazel-bazel-test
 bazel-bin
@@ -16,3 +19,4 @@ bazel-vagrant
 bazel-bazel-example
 bazel-events
 remote_build_execution_oauth_client.json
+resources.tar

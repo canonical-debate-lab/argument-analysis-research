@@ -15,12 +15,21 @@ gazelle(
     prefix = "github.com/canonical-debate-lab/argument-analysis-research",
 )
 
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "resources.tar",
+])
+
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 k8s_objects(
     name = "k8s_dev",
     objects = [
         "//k8s:dev_ingress",
-        "//cmd/api:dev",
+        "//k8s:dev_pvc-adw",
+        "//cmd/segmenter:dev",
+        "//cmd/keyword:dev",
+        "//src:dev",
     ],
 )

@@ -7,10 +7,11 @@ go_library(
         "handler.go",
         "server.go",
     ],
+    importmap = "github.com/canonical-debate-lab/argument-analysis-research/vendor/bitbucket.org/seibert-media/events/pkg/api",
     importpath = "bitbucket.org/seibert-media/events/pkg/api",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/api/middlewares:go_default_library",
+        "//vendor/bitbucket.org/seibert-media/events/pkg/api/middlewares:go_default_library",
         "//vendor/github.com/go-chi/chi:go_default_library",
         "//vendor/github.com/go-chi/chi/middleware:go_default_library",
         "//vendor/github.com/pkg/errors:go_default_library",

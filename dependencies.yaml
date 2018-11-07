@@ -1,0 +1,9 @@
+dependencies:
+  com.fasterxml.jackson.module:
+    jackson-module-kotlin:
+      version: "2.9.7"
+      lang: kotlin
+  io.javalin:
+    javalin:
+      version: "2.3.0"
+      lang: kotlin

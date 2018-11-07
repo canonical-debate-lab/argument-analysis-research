@@ -115,6 +115,14 @@
   revision = "45a16cdeea92860b846f8e7200131cb514b2f94f"
 
 [[projects]]
+  digest = "1:4ca145a665316d3c020a39c0741780fa3636b9152b824206796c4dce541f4a24"
+  name = "github.com/sethgrid/pester"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "03e26c9abbbf5accb8349790bf9f41bde09d72c3"
+  version = "1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:8d251c8804ca36b6703b5dcb75f33c62e77afcd3d7ae12bcac76a86e739128b1"
   name = "github.com/tchap/zapext"
@@ -206,6 +214,7 @@
     "github.com/go-chi/chi",
     "github.com/pkg/errors",
     "github.com/seibert-media/golibs/log",
+    "github.com/sethgrid/pester",
     "go.uber.org/zap",
     "gopkg.in/jdkato/prose.v2",
   ]

@@ -1,0 +1,8 @@
+package(default_visibility = ["//visibility:public"])
+
+java_import(
+    name = "adw",
+    jars = [
+        "adw.feb2015.jar",
+    ],
+)

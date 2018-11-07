@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "correlation.go",
+        "data.go",
+        "data_set_distances.go",
+        "deviation.go",
+        "errors.go",
+        "legacy.go",
+        "load.go",
+        "max.go",
+        "mean.go",
+        "median.go",
+        "min.go",
+        "mode.go",
+        "outlier.go",
+        "percentile.go",
+        "quartile.go",
+        "regression.go",
+        "round.go",
+        "sample.go",
+        "sum.go",
+        "util.go",
+        "variance.go",
+    ],
+    importmap = "github.com/canonical-debate-lab/argument-analysis-research/vendor/github.com/montanaflynn/stats",
+    importpath = "github.com/montanaflynn/stats",
+    visibility = ["//visibility:public"],
+)

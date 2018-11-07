@@ -90,6 +90,7 @@ secret: parser
 
 kube: gazelle
 	bazel run \
+	--verbose_failures \
 	--workspace_status_command=./helpers/status.sh $(CMD)
 
 kube-remote:

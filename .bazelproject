@@ -1,0 +1,8 @@
+directories:
+  .
+
+targets:
+  //...:all
+
+additional_languages:
+  kotlin

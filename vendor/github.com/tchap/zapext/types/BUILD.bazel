@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "http_request.go",
+        "http_response.go",
+    ],
+    importmap = "github.com/canonical-debate-lab/argument-analysis-research/vendor/github.com/tchap/zapext/types",
+    importpath = "github.com/tchap/zapext/types",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/go.uber.org/zap/zapcore:go_default_library"],
+)

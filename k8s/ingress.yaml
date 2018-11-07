@@ -11,8 +11,16 @@ spec:
   - host: research.democracy.ovh
     http:
       paths:
-      - path: /analyze
+      - path: /argument/segment
         backend:
-          serviceName: api
+          serviceName: segmenter
+          servicePort: 80
+      - path: /argument/keyword
+        backend:
+          serviceName: keyword
+          servicePort: 80
+      - path: /argument/adw
+        backend:
+          serviceName: adw
           servicePort: 80
 

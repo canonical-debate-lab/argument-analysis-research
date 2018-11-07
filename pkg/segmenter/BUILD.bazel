@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["segmenter.go"],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/segmenter",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/document:go_default_library",
+        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
+        "//vendor/go.uber.org/zap:go_default_library",
+        "//vendor/gopkg.in/jdkato/prose.v2:go_default_library",
+    ],
+)
