@@ -46,6 +46,7 @@ func main() {
 func Routes(ctx context.Context, svc Spec, srv *api.Server) {
 	srv.Router.Route("/argument/segment", func(r chi.Router) {
 		r.Post("/", api.NewHandler(ctx, Handler(ctx, svc)))
+		r.Post("/bulk", api.NewHandler(ctx, BulkHandler(ctx, svc)))
 	})
 }
 
@@ -83,6 +84,48 @@ func Handler(ctx context.Context, svc Spec) api.HandlerFunc {
 		}
 
 		resp.Document = doc
+
+		return resp
+	}
+}
+
+// BulkHandler for this endpoint
+func BulkHandler(ctx context.Context, svc Spec) api.HandlerFunc {
+	type Request struct {
+		Input []string `json:"inputs"`
+	}
+
+	type Response struct {
+		Documents []*document.Document `json:"documents"`
+		*api.Error
+	}
+
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) api.Response {
+		var (
+			req  *Request
+			resp = &Response{Error: &api.Error{}}
+		)
+
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			resp.Fail(errors.Wrap(err, "decoding request"))
+			return resp
+		}
+
+		for _, str := range req.Input {
+
+			ctx := log.WithFields(ctx,
+				zap.String("input", str),
+			)
+
+			doc, err := document.New(ctx, str)
+			if err != nil {
+				resp.Fail(errors.Wrap(err, "analyzing input"))
+				return resp
+			}
+
+			resp.Documents = append(resp.Documents, doc)
+		}
 
 		return resp
 	}

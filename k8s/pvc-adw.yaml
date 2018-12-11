@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: adw-resources
-  annotations:
-    volume.alpha.kubernetes.io/storage-class: any
-  namespace: research
+  name: adw-data-pvc
+  labels:
+    component: "adw"
 spec:
-  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: ""
+  volumeName: adw-data
+  accessModes:
+    - ReadOnlyMany
   resources:
     requests:
-      storage: 4Gi
+      storage: 6Gi

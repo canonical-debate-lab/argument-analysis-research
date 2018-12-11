@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: adw-data
+  labels:
+    failure-domain.beta.kubernetes.io/zone: "europe-west2-b__europe-west2-c"
+    component: "adw"
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 10G
+  accessModes:
+    - ReadOnlyMany
+  gcePersistentDisk:
+    pdName: adw-data
+    fsType: ext4

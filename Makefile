@@ -10,8 +10,8 @@ export NAME		:= argument-analysis-research
 export REPO		:= canonical-debate-lab
 export GIT_HOST	:= github.com
 export REGISTRY	?= eu.gcr.io
-export PROJECT		?= kwiesmueller-development
-export RBE_PROJECT		?= smedia-events
+export PROJECT		?= argument-analysis-research
+export RBE_PROJECT		?= argument-analysis-research
 
 export PATH 		:= $(GOPATH)/bin:$(PATH)
 
@@ -59,27 +59,39 @@ gazelle:
 	bazel run //:gazelle
 
 build: gazelle
-	bazel build --workspace_status_command=./helpers/status.sh $(CMD)
+	bazel build --workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 build-remote:
-	bazel --bazelrc=.bazelrc build --verbose_failures --config=remote --remote_instance_name=projects/$(RBE_PROJECT)/instances/default_instance --project_id=$(RBE_PROJECT) $(CMD)
+	bazel --bazelrc=.bazelrc build --verbose_failures --config=remote --remote_instance_name=projects/$(RBE_PROJECT)/instances/default_instance --project_id=$(RBE_PROJECT) \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 docker: gazelle
-	bazel run --force_python=py2 --workspace_status_command=./helpers/status.sh $(CMD):image -- --norun
+	bazel run --force_python=py2 --workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD):image -- --norun
 
 push: gazelle
-	bazel run --workspace_status_command=./helpers/status.sh //:push
+	bazel run --workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 //:push
 
 run: gazelle
 	bazel run \
-	--workspace_status_command=./helpers/status.sh $(CMD):bin
+	--workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 run-remote:
 	bazel run --verbose_failures --worker_verbose \
 	--config=remote \
 	--project_id=$(RBE_PROJECT) \
 	--remote_instance_name=projects/$(RBE_PROJECT)/instances/default_instance \
-	--workspace_status_command=./helpers/status.sh $(CMD):bin
+	--workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 # update the secret located inside k8s/secret.yaml for NAMESPACE
 secret: parser
@@ -91,11 +103,15 @@ secret: parser
 kube: gazelle
 	bazel run \
 	--verbose_failures \
-	--workspace_status_command=./helpers/status.sh $(CMD)
+	--workspace_status_command=./helpers/status.sh \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 kube-remote:
 	bazel run \
-	--workspace_status_command=./helpers/status.sh --verbose_failures --worker_verbose --config=remote --remote_instance_name=projects/$(RBE_PROJECT)/instances/default_instance --project_id=$(RBE_PROJECT) $(CMD)
+	--workspace_status_command=./helpers/status.sh --verbose_failures --worker_verbose --config=remote --remote_instance_name=projects/$(RBE_PROJECT)/instances/default_instance --project_id=$(RBE_PROJECT) \
+  --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 \
+  --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8 $(CMD)
 
 # install passed in tool project
 install:

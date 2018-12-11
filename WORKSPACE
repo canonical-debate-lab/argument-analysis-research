@@ -178,6 +178,6 @@ k8s_defaults(
   name = "k8s_deploy",
   kind = "deployment",
   namespace = "{NAMESPACE}",
-  cluster = "gke_kwiesmueller-development_us-east1-d_cluster-1",
-  repo = "eu.gcr.io/kwiesmueller-development/",
+  cluster = "gke_argument-analysis-research_europe-west2_cluster-2",
+  repo = "eu.gcr.io/argument-analysis-research/",
 )

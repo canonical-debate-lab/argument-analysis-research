@@ -10,6 +10,12 @@ spec:
         component: "{NAME}"
     spec:
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-preemptible
+                operator: Exists
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -21,13 +27,13 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: service
-        image: eu.gcr.io/kwiesmueller-development/{NAME}:dev
+        image: eu.gcr.io/argument-analysis-research/{NAME}:dev
         imagePullPolicy: Always
         env:
         - name: DEBUG
           value: "true"
         - name: PROJECT
-          value: kwiesmueller-development
+          value: argument-analysis-research
         - name: IS_PROD
           value: "false"
         ports:
@@ -36,9 +42,9 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 250m
+            cpu: 500m
             memory: 500Mi
           requests:
-            cpu: 250m
+            cpu: 500m
             memory: 500Mi
 

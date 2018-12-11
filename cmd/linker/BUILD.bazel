@@ -16,7 +16,6 @@ go_library(
         "//pkg/linker:go_default_library",
         "//vendor/bitbucket.org/seibert-media/events/pkg/api:go_default_library",
         "//vendor/bitbucket.org/seibert-media/events/pkg/service:go_default_library",
-        "//vendor/github.com/go-chi/chi:go_default_library",
         "//vendor/github.com/pkg/errors:go_default_library",
         "//vendor/github.com/seibert-media/golibs/log:go_default_library",
         "//vendor/go.uber.org/zap:go_default_library",
@@ -46,6 +45,7 @@ load(
 
 manifest(
     name = "dpl",
+    template = "//k8s:deploy-nonpreempt.yaml",
 )
 
 manifest(

@@ -11,6 +11,7 @@ import (
 
 // Document starts with Content which is then analyzed
 type Document struct {
+	Hash     string     `json:"hash"`
 	Content  string     `json:"content"`
 	Segments []*Segment `json:"segments,omitempty"`
 }

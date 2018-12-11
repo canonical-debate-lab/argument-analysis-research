@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"time"
 
@@ -13,13 +14,11 @@ import (
 	"github.com/sethgrid/pester"
 
 	"github.com/pkg/errors"
-
-	"github.com/canonical-debate-lab/argument-analysis-research/pkg/document"
 )
 
 // Rater provides the interface for rating two segments against eachother
 type Rater interface {
-	Rate(ctx context.Context, a, b *document.Segment) (float32, error)
+	Rate(ctx context.Context, a, b string) (float32, error)
 }
 
 // HTTPRater implements Rater and executes the rating through a http request which it retries on timeout
@@ -40,7 +39,7 @@ func NewHTTPRater(url string) *HTTPRater {
 
 	return &HTTPRater{
 		URL:        url,
-		MaxRetries: 5,
+		MaxRetries: 10,
 
 		client: client,
 	}
@@ -48,7 +47,7 @@ func NewHTTPRater(url string) *HTTPRater {
 
 // Rate by sending json to URL and retry on timeout
 // TODO(kwiesmueller): add two-way rating
-func (r *HTTPRater) Rate(ctx context.Context, a, b *document.Segment) (float32, error) {
+func (r *HTTPRater) Rate(ctx context.Context, a, b string) (float32, error) {
 	type Request struct {
 		A string `json:"text1"`
 		B string `json:"text2"`
@@ -58,12 +57,17 @@ func (r *HTTPRater) Rate(ctx context.Context, a, b *document.Segment) (float32, 
 		Dist float32 `json:"value"`
 	}
 
-	req := Request{a.Text, b.Text}
+	req := Request{a, b}
 
 	data, err := json.Marshal(req)
 	if err != nil {
 		return 0, errors.Wrap(err, "encoding request")
 	}
+
+	if len(req.A) == 0 || len(req.B) == 0 {
+		return 0, errors.New("invalid request")
+	}
+
 	resp, err := r.client.Post(r.URL, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		log.From(ctx).Error("sending request", zap.String("url", r.URL), zap.Error(err))
@@ -74,6 +78,11 @@ func (r *HTTPRater) Rate(ctx context.Context, a, b *document.Segment) (float32, 
 	if err != nil {
 		log.From(ctx).Error("reading response", zap.String("url", r.URL), zap.Error(err))
 		return 0, errors.Wrap(err, "reading response")
+	}
+
+	if resp.StatusCode != 200 {
+		log.From(ctx).Error("sending request", zap.Int("status", resp.StatusCode), zap.String("url", r.URL), zap.Error(err))
+		return 0, fmt.Errorf("request failed: status %d: %s", resp.StatusCode, body)
 	}
 
 	var response *Response

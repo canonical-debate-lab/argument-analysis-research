@@ -55,6 +55,40 @@ To segment a piece of text send it to the API Server (dev running at https://res
 
 ```
 
+#### Bulk
+
+In addition to the default single string segmenting, we provide a dedicated endpoint for doing bulk segmentation of multiple strings into an array of documents.
+
+**Warning: Be aware that our dev environment is running on preemptible instances with a maximum uptime of 24h. Too large bulk actions might get terminated without further notice.**
+
+Just pass an array of strings:
+
+```json
+{
+  "inputs": [
+    "Hello darkness my old friend",
+    "foo"
+  ]
+}
+```
+
+And get an array of segmented documents:
+
+```json
+{
+  "documents": [
+    {
+      "content": "Hello darkness my old friend",
+      "segments": [
+        {
+          "text": "Hello darkness my old friend"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Keyword Extraction Endpoint
 
 For Keyword extraction we currently use RAKE. The endpoint adds found keywords to the passed in segment.
@@ -144,12 +178,8 @@ Immediate Todos are:
 
 #### Request
 
-The request has to contain the rating api url as well as a list of **segmented** documents.
-The order of the documents will be retained and represent the order of the response data.
-
 ```json
 {
-  "rater": "https://research.democracy.ovh/argument/linker",
   "documents":[
     {
       "content": "Government incentives to upgrade coal fired power plants and coal processing plants to make them more efficient and less polluting  Replace old nuclear power plants with newer, safer more efficient designsLarger p ublic investment in wind, solar, and where feasible geothermal energy Upgrade the power grid to be more efficient  (because a large part of our carbon footprint is electricity generation) Fuel efficiency standards for large trucks and not just passenger cars",

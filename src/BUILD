@@ -42,7 +42,6 @@ container_image(
 
 java_image(
     name = "image",
-    base = ":config_image",
     main_class = "com.github.cdl.adw.ServiceKt",
     runtime_deps = [
         ":code",
@@ -74,7 +73,7 @@ k8s_deploy(
 k8s_deploy(
     name = "deployment",
     images = {
-        "adw:dev": ":image",
+        "adwv2:dev": ":image",
     },
     template = ":dpl",
 )

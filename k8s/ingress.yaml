@@ -23,4 +23,8 @@ spec:
         backend:
           serviceName: adw
           servicePort: 80
+      - path: /argument/link
+        backend:
+          serviceName: linker
+          servicePort: 80
 

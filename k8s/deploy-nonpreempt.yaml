@@ -1,13 +1,13 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: adw
+  name: "{NAME}"
 spec:
-  replicas: 4
+  replicas: 1
   template:
     metadata:
       labels:
-        component: adw
+        component: "{NAME}"
     spec:
       affinity:
         nodeAffinity:
@@ -15,7 +15,7 @@ spec:
             nodeSelectorTerms:
             - matchExpressions:
               - key: cloud.google.com/gke-preemptible
-                operator: Exists
+                operator: DoesNotExist
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -23,11 +23,11 @@ spec:
               - key: component
                 operator: In
                 values:
-                - adw
+                - "{NAME}"
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: service
-        image: eu.gcr.io/argument-analysis-research/adwv2:dev
+        image: eu.gcr.io/argument-analysis-research/{NAME}:dev
         imagePullPolicy: Always
         env:
         - name: DEBUG
@@ -42,20 +42,9 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 1
-            memory: 2G
+            cpu: "1.2"
+            memory: 2Gi
           requests:
-            cpu: 1
-            memory: 2G
-        volumeMounts:
-          - mountPath: /app/src/image.binary.runfiles/research/config
-            subPath: config
-            name: data
-          - mountPath: /app/src/image.binary.runfiles/research/resources
-            subPath: resources
-            name: data
-      volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: adw-data-pvc
-          readOnly: true 
+            cpu: "1.2"
+            memory: 2Gi
+

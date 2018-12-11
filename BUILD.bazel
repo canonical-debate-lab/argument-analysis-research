@@ -28,8 +28,10 @@ k8s_objects(
     objects = [
         "//k8s:dev_ingress",
         "//k8s:dev_pvc-adw",
+        "//k8s:dev_pv-adw",
         "//cmd/segmenter:dev",
         "//cmd/keyword:dev",
+        "//cmd/linker:dev",
         "//src:dev",
     ],
 )
