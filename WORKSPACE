@@ -1,11 +1,15 @@
 workspace(name = "research")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Imports basic Go rules for Bazel (e.g. go_binary)
-git_repository(
+http_archive(
     name = "io_bazel_rules_go",
-    remote = "https://github.com/bazelbuild/rules_go.git",
-    commit = "e4d0254fb249a09fb01f052b23d3baddae1b70ec",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.5/rules_go-0.16.5.tar.gz",
+    sha256 = "7be7dc01f1e0afdba6c8eb2b43d2fa01c743be1b9273ab1eaf6c233df078d705",
 )
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
 
 # Imports the Gazelle tool for Go/Bazel
 git_repository(
@@ -36,16 +40,6 @@ git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
     tag = "v0.5.1",
-)
-
-
-# Loads Go rules for Bazel
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
-
-go_rules_dependencies()
-
-go_register_toolchains(
-    go_version = "1.10.1",
 )
 
 # Loads Docker rules for Bazel

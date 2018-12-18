@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "documents.go",
+        "linker.go",
+        "rater.go",
+        "segments.go",
+    ],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/async",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/document:go_default_library",
+        "//pkg/linker:go_default_library",
+        "//pkg/linker/db:go_default_library",
+        "//pkg/rater:go_default_library",
+        "//vendor/github.com/pkg/errors:go_default_library",
+        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
+        "//vendor/go.uber.org/zap:go_default_library",
+    ],
+)

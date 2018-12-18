@@ -1,4 +1,4 @@
-package linker
+package rater
 
 import (
 	"bytes"
@@ -8,12 +8,10 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/seibert-media/golibs/log"
-	"go.uber.org/zap"
-
-	"github.com/sethgrid/pester"
-
 	"github.com/pkg/errors"
+	"github.com/seibert-media/golibs/log"
+	"github.com/sethgrid/pester"
+	"go.uber.org/zap"
 )
 
 // Rater provides the interface for rating two segments against eachother

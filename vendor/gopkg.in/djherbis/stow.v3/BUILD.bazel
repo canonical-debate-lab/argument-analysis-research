@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "enc.go",
+        "func.go",
+        "pool.go",
+        "primer.go",
+        "store.go",
+    ],
+    importmap = "github.com/canonical-debate-lab/argument-analysis-research/vendor/gopkg.in/djherbis/stow.v3",
+    importpath = "gopkg.in/djherbis/stow.v3",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/go.etcd.io/bbolt:go_default_library"],
+)
