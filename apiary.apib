@@ -149,11 +149,33 @@ This almost primitive service wraps around [ADW](https://github.com/pilehvar/ADW
 
 ## Linker API [/argument/link]
 
+The Linker API provides a service for checking a set of documents for links based on their segments.
+It takes a pre segmented list of documents to find and return found links.
+
+The service itself is async and acts like a database with background processing.
+It provides an easy interface that manages multiple linker instances in the background.
+If a new instance is created (by sending a linking POST without specifying any linkerID), the new ID gets returned by the service.
+To add documents to this instance set the linkerID as shown below.
+
+The linker compares all its stored documents based on their segments doing a two way rating through the rating service defined per linker instance.
+
 ### Insert one or many Documents into the Linker [POST /argument/link]
+
+This request either sends to or creates a new linker which stores and handles the provided documents.
+The `id` value is optional. If none is set, a new linker is being created and the output will contain the new ID for sending further documents or querying the results.
+If `id` is set, the existing linker found under its value will get used.
+
+The `rater` value is optional and defaults to `https://research.democracy.ovh/argument/adw`.
+The `threshold` value is the minimal weight two segments need between eachother to get stored as links. It defaults to `0`.
+
+Setting `rater` and `threshold` after the linker was created will have no impact on any existing linkers and get ignored if `id` is set.
 
 + Request (application/json)
 
             {
+                "id": "",
+                "rater": "",
+                "threshold": 0.25,
                 "documents": [
                     {
                         "content": "Keep encouraging regulations reducing pollutants into our atmosphere.",
@@ -181,7 +203,7 @@ This almost primitive service wraps around [ADW](https://github.com/pilehvar/ADW
 
     + Body
 
-            {}
+            {"id": "8c2ab258-60dc-4416-9648-edd1efbf3a84"}
             
 + Response 500 (application/json)
 
@@ -191,9 +213,34 @@ This almost primitive service wraps around [ADW](https://github.com/pilehvar/ADW
                 "error": "error message or object"
             }
             
-### List all links found so far [GET /argument/links{?docs}]
+### List all existing linkers [GET /argument/linkers]
+
+This request returns all the linkers persisted in the linker database.
+
++ Response 200
+
+    + Body
+    
+            {
+                "linkers": [
+                    {
+                        "metadata": {
+                            "id": "c6b5dc9b-48fa-40d1-9d30-a134c045e851",
+                            "rater": "https://research.democracy.ovh/argument/adw",
+                            "threshold": 0.45
+                        }
+                    }
+                ]
+            }
+            
+### List all links found so far [GET /argument/links{?docs}{id}]
+
+This request queries all documents and links for the provided linker `id`.
+To not query all documents, the `docs` parameter can be set to false and the linker won't return them.
 
 + Parameters
+
+    + id (string) - The linker id to query links from
 
     + docs (bool, optional) - If set to false, no documents will be returned, just links.
         + Default: `true`
