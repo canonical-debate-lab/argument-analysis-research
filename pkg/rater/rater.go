@@ -21,9 +21,9 @@ type Rater interface {
 
 // HTTPRater implements Rater and executes the rating through a http request which it retries on timeout
 type HTTPRater struct {
-	URL        string
-	MaxRetries int
-	Timeout    time.Duration
+	URL        string        `json:"url"`
+	MaxRetries int           `json:"maxRetries"`
+	Timeout    time.Duration `json:"timeout"`
 
 	client *pester.Client
 }
@@ -37,7 +37,7 @@ func NewHTTPRater(url string) *HTTPRater {
 
 	return &HTTPRater{
 		URL:        url,
-		MaxRetries: 10,
+		MaxRetries: client.MaxRetries,
 
 		client: client,
 	}

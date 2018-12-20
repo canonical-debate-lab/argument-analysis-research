@@ -2,10 +2,15 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["db.go"],
-    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/db",
+    srcs = [
+        "local.go",
+        "localManager.go",
+    ],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/storage",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/document:go_default_library",
+        "//pkg/linker:go_default_library",
         "//vendor/github.com/pkg/errors:go_default_library",
         "//vendor/github.com/seibert-media/golibs/log:go_default_library",
         "//vendor/go.etcd.io/bbolt:go_default_library",

@@ -20,3 +20,17 @@ type Metadata struct {
 	Rater     string  `json:"rater"`
 	Threshold float32 `json:"threshold"`
 }
+
+// Storage defines the minimal interface for a linker persistence layer
+type Storage interface {
+	SetMetadata(ctx context.Context, meta *Metadata)
+	Metadata(ctx context.Context) (*Metadata, error)
+
+	InsertDocument(ctx context.Context, doc *document.Document)
+	InsertSegment(ctx context.Context, doc *Segment)
+	InsertLink(ctx context.Context, doc *Edge)
+
+	Documents(ctx context.Context) (map[string]*document.Document, error)
+	Segments(ctx context.Context) (map[string]*Segment, error)
+	Links(ctx context.Context) (map[string]*Edge, error)
+}

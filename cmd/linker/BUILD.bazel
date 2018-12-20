@@ -15,6 +15,7 @@ go_library(
         "//pkg/document:go_default_library",
         "//pkg/linker:go_default_library",
         "//pkg/linker/async:go_default_library",
+        "//pkg/linker/storage:go_default_library",
         "//vendor/bitbucket.org/seibert-media/events/pkg/api:go_default_library",
         "//vendor/bitbucket.org/seibert-media/events/pkg/service:go_default_library",
         "//vendor/github.com/pkg/errors:go_default_library",

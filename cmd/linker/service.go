@@ -9,6 +9,7 @@ import (
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/document"
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker"
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/async"
+	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/storage"
 
 	"bitbucket.org/seibert-media/events/pkg/api"
 	"bitbucket.org/seibert-media/events/pkg/service"
@@ -36,7 +37,10 @@ func main() {
 	Routes(ctx, svc, srv)
 	go srv.GracefulHandler(ctx)
 
-	pool := linker.New(ctx, async.New)
+	pool := linker.New(ctx, storage.NewLocalManager(ctx, "/db"), async.New)
+	if err := pool.Load(ctx); err != nil {
+		log.From(ctx).Fatal("loading pool", zap.Error(err))
+	}
 
 	srv.Router.Post("/argument/link", api.NewHandler(ctx, InsertHandler(ctx, pool, svc)))
 	srv.Router.Get("/argument/links", api.NewHandler(ctx, ListHandler(ctx, pool, svc)))

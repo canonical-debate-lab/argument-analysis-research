@@ -4,13 +4,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/document"
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker"
-	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/db"
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/rater"
 
 	"github.com/pkg/errors"
@@ -22,8 +20,7 @@ import (
 type asyncLinker struct {
 	Metadata *linker.Metadata `json:"metadata"`
 
-	rater     rater.Rater
-	threshold float32
+	rater rater.Rater
 
 	docs chan *document.Document
 
@@ -40,27 +37,12 @@ type asyncLinker struct {
 	lm    sync.RWMutex
 	links map[string]*linker.Edge
 
-	db *db.DB
+	db linker.Storage
 }
 
 // New Linker for processing and persisting documents
-func New(ctx context.Context, id string) (linker.Linker, error) {
-	db, err := db.New(ctx, fmt.Sprintf("db-%s", id))
-	if err != nil {
-		return nil, err
-	}
-
-	var meta *linker.Metadata
-	err = db.Metadata.Get("config", &meta)
-	if err != nil {
-		return nil, errors.Wrap(err, "loading metadata")
-	}
-
+func New(ctx context.Context, storage linker.Storage) (linker.Linker, error) {
 	return &asyncLinker{
-		Metadata: meta,
-
-		rater:     rater.NewHTTPRater(meta.Rater),
-		threshold: meta.Threshold,
 
 		docs:      make(chan *document.Document),
 		documents: make(map[string]*document.Document),
@@ -69,7 +51,7 @@ func New(ctx context.Context, id string) (linker.Linker, error) {
 		segs:      make(chan *linker.Segment),
 		link:      make(chan *linker.Edge),
 
-		db: db,
+		db: storage,
 	}, nil
 }
 
@@ -82,32 +64,9 @@ func (l *asyncLinker) Run(ctx context.Context) error {
 	throttle := time.Tick(rate)
 
 	if l.db != nil {
-		l.dm.Lock()
-		if err := l.db.Documents.ForEach(func(doc *document.Document) {
-			l.documents[doc.Hash] = doc
-		}); err != nil {
-			l.dm.Unlock()
-			return errors.Wrap(err, "restoring documents")
+		if err := l.loadFromDB(ctx); err != nil {
+			return errors.Wrap(err, "loading from db")
 		}
-		l.dm.Unlock()
-
-		l.sm.Lock()
-		if err := l.db.Segments.ForEach(func(seg *linker.Segment) {
-			l.segments[seg.Hash()] = seg
-		}); err != nil {
-			l.sm.Unlock()
-			return errors.Wrap(err, "restoring segments")
-		}
-		l.sm.Unlock()
-
-		l.lm.Lock()
-		if err := l.db.Links.ForEach(func(edge *linker.Edge) {
-			l.links[edge.Hash()] = edge
-		}); err != nil {
-			l.lm.Unlock()
-			return errors.Wrap(err, "restoring links")
-		}
-		l.lm.Unlock()
 	}
 
 	for edge := range l.link {
@@ -117,12 +76,7 @@ func (l *asyncLinker) Run(ctx context.Context) error {
 		log.From(ctx).Info("storing link", zap.Stringer("edge", edge))
 		l.links[edge.Hash()] = edge
 		l.lm.Unlock()
-		go func(edge *linker.Edge) {
-			hash := edge.Hash()
-			if err := l.db.Links.Put(hash, edge); err != nil {
-				log.From(ctx).Error("storing link", zap.Stringer("edge", edge), zap.String("hash", hash), zap.Error(err))
-			}
-		}(edge)
+		go l.db.InsertLink(ctx, edge)
 	}
 
 	return errors.New("linker closed unexpectedly")
@@ -142,11 +96,7 @@ func (l *asyncLinker) InsertDocument(ctx context.Context, doc *document.Document
 
 	log.From(ctx).Info("inserting document", zap.String("hash", doc.Hash))
 	l.docs <- doc
-	go func() {
-		if err := l.db.Documents.Put(doc.Hash, doc); err != nil {
-			log.From(ctx).Error("storing document", zap.String("hash", doc.Hash), zap.Error(err))
-		}
-	}()
+	go l.db.InsertDocument(ctx, doc)
 
 	return nil
 }

@@ -32,7 +32,7 @@ func (l *asyncLinker) rate(ctx context.Context, base, seg *linker.Segment) error
 		return errors.Wrapf(err, "rating src:%s-trg:%s", base, seg)
 	}
 
-	if weight >= l.threshold {
+	if weight >= l.Metadata.Threshold {
 		go func() {
 			l.link <- &linker.Edge{
 				Source: base.Node,

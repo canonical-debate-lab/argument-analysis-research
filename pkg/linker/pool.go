@@ -2,29 +2,33 @@ package linker
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 
-	"github.com/canonical-debate-lab/argument-analysis-research/pkg/linker/db"
+	"go.uber.org/zap"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/seibert-media/golibs/log"
 )
 
 // Pool offers management for multiple linker instances
 // It takes care of creating new ones and accessing existing ones
 type Pool struct {
-	creator Creator
+	instanceCreator InstanceCreator
+	storageManager  StorageManager
 
 	i         sync.RWMutex
 	instances map[string]Linker
 }
 
-// Creator defines the function called to initialize new Linkers
-type Creator func(ctx context.Context, id string) (Linker, error)
+// InstanceCreator defines the function called to initialize new Linkers
+type InstanceCreator func(ctx context.Context, storage Storage) (Linker, error)
+
+// StorageManager defines the interface required to manage Storage instances
+type StorageManager interface {
+	New(ctx context.Context, id string) (Storage, error)
+	List(ctx context.Context) (map[string]Storage, error)
+}
 
 // Accessor stores a Linker instance and it's access information
 // It is a helper type for working with pooled linkers
@@ -34,31 +38,47 @@ type Accessor struct {
 }
 
 // New initializes the pool and prepares for storing instances
-func New(ctx context.Context, creator Creator) *Pool {
+func New(ctx context.Context, storageManager StorageManager, creator InstanceCreator) *Pool {
 	p := &Pool{
-		creator:   creator,
+		instanceCreator: creator,
+		storageManager:  storageManager,
+
 		instances: make(map[string]Linker),
 	}
-
-	filepath.Walk("db", func(path string, info os.FileInfo, err error) error {
-		if strings.HasPrefix(path, "db-") {
-			instance, err := p.creator(ctx, strings.TrimPrefix(path, "db-"))
-			if err != nil {
-				return errors.Wrap(err, "creating instance")
-			}
-
-			p.i.Lock()
-			p.instances[strings.TrimPrefix(path, "db-")] = instance
-			p.i.Unlock()
-		}
-		return nil
-	})
 
 	return p
 }
 
+// Load existing instances from the storage manager
+func (p *Pool) Load(ctx context.Context) error {
+	log.From(ctx).Info("loading existing instances")
+
+	instances, err := p.storageManager.List(ctx)
+	if err != nil {
+		return errors.Wrap(err, "retrieving storage instances")
+	}
+
+	for id, db := range instances {
+		instance, err := p.instanceCreator(ctx, db)
+		if err != nil {
+			return errors.Wrap(err, "recreating instance")
+		}
+
+		p.i.Lock()
+		p.instances[id] = instance
+		p.i.Unlock()
+
+		go instance.Run(ctx)
+	}
+
+	return nil
+}
+
 // Create new linker, store it in the pool and start running it's background process
 func (p *Pool) Create(ctx context.Context, raterURL string, threshold float32) (*Accessor, error) {
+	ctx = log.WithFields(ctx, zap.String("rater", raterURL), zap.Float32("threshold", threshold))
+	log.From(ctx).Info("creating instance")
+
 	rand, err := uuid.NewRandom()
 	if err != nil {
 		return nil, errors.Wrap(err, "creating linker uuid")
@@ -68,25 +88,21 @@ func (p *Pool) Create(ctx context.Context, raterURL string, threshold float32) (
 		return nil, errors.New("invalid uuid generated")
 	}
 
-	db, err := db.New(ctx, fmt.Sprintf("db-%s", rand.String()))
-	if err != nil {
-		return nil, err
-	}
-
 	meta := &Metadata{
 		ID:        rand.String(),
 		Rater:     raterURL,
 		Threshold: threshold,
 	}
 
-	if err = db.Metadata.Put("config", meta); err != nil {
-		return nil, errors.Wrap(err, "creating metadata")
+	log.From(ctx).Info("creating storage")
+	db, err := p.storageManager.New(ctx, rand.String())
+	if err != nil {
+		return nil, errors.Wrap(err, "creating storage")
 	}
-	if err := db.Close(); err != nil {
-		return nil, errors.Wrap(err, "closing metadata db")
-	}
+	db.SetMetadata(ctx, meta)
 
-	linker, err := p.creator(ctx, rand.String())
+	log.From(ctx).Info("creating linker")
+	linker, err := p.instanceCreator(ctx, db)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating linker")
 	}

@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
+        "db.go",
         "documents.go",
         "linker.go",
         "rater.go",
@@ -13,7 +14,6 @@ go_library(
     deps = [
         "//pkg/document:go_default_library",
         "//pkg/linker:go_default_library",
-        "//pkg/linker/db:go_default_library",
         "//pkg/rater:go_default_library",
         "//vendor/github.com/pkg/errors:go_default_library",
         "//vendor/github.com/seibert-media/golibs/log:go_default_library",
