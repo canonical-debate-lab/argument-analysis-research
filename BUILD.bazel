@@ -29,6 +29,7 @@ k8s_objects(
         "//k8s:dev_ingress",
         "//k8s:dev_pvc-adw",
         "//k8s:dev_pv-adw",
+        "//k8s:dev_pvc-linker",
         "//cmd/segmenter:dev",
         "//cmd/keyword:dev",
         "//cmd/linker:dev",

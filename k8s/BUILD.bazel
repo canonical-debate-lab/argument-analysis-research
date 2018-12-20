@@ -3,11 +3,13 @@ package(default_visibility = ["//visibility:public"])
 exports_files([
     "deploy.yaml",
     "deploy-nonpreempt.yaml",
+    "deploy-linker.yaml",
     "deploy-adw.yaml",
     "service.yaml",
     "service-adw.yaml",
     "pv-adw.yaml",
     "pvc-adw.yaml",
+    "pvc-linker.yaml",
 ])
 
 load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
@@ -32,6 +34,11 @@ manifest(
 )
 
 manifest(
+    name = "manifest_pvc-linker",
+    template = "pvc-linker.yaml",
+)
+
+manifest(
     name = "manifest_pv-adw",
     template = "pv-adw.yaml",
 )
@@ -44,4 +51,9 @@ k8s_deploy(
 k8s_deploy(
     name = "dev_pv-adw",
     template = ":manifest_pv-adw",
+)
+
+k8s_deploy(
+    name = "dev_pvc-linker",
+    template = ":manifest_pvc-linker",
 )

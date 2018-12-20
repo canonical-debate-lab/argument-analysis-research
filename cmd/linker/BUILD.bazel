@@ -47,7 +47,7 @@ load(
 
 manifest(
     name = "dpl",
-    template = "//k8s:deploy-nonpreempt.yaml",
+    template = "//k8s:deploy-linker.yaml",
 )
 
 manifest(
