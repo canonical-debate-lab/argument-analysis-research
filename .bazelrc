@@ -1,1 +1,4 @@
 build --strategy=KotlinCompile=worker
+build --host_force_python=PY2
+run --host_force_python=PY2
+test --host_force_python=PY2

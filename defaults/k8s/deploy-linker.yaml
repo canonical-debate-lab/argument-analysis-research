@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{NAME}"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: "{NAME}"
+    spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: cloud.google.com/gke-preemptible
+      #           operator: DoesNotExist
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #     - labelSelector:
+      #         matchExpressions:
+      #         - key: component
+      #           operator: In
+      #           values:
+      #           - "{NAME}"
+      #       topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: service
+        image: {NAME}:dev
+        imagePullPolicy: Always
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: PROJECT
+          value: argument-analysis-research
+        - name: IS_PROD
+          value: "false"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        # resources:
+        #   limits:
+        #     cpu: "1.2"
+        #     memory: 2Gi
+        #   requests:
+        #     cpu: "1.2"
+        #     memory: 2Gi
+        volumeMounts:
+          - mountPath: /db
+            name: data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: linker
+

@@ -11,10 +11,10 @@ go_library(
     deps = [
         "//pkg/document:go_default_library",
         "//pkg/linker:go_default_library",
-        "//vendor/github.com/pkg/errors:go_default_library",
-        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
-        "//vendor/go.etcd.io/bbolt:go_default_library",
-        "//vendor/go.uber.org/zap:go_default_library",
-        "//vendor/gopkg.in/djherbis/stow.v3:go_default_library",
+        "@com_github_pkg_errors//:go_default_library",
+        "@com_github_seibert_media_golibs//log:go_default_library",
+        "@in_gopkg_djherbis_stow_v3//:go_default_library",
+        "@io_etcd_go_bbolt//:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
     ],
 )

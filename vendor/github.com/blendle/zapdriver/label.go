@@ -2,7 +2,6 @@ package zapdriver
 
 import (
 	"strings"
-	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -22,15 +21,13 @@ func Label(key, value string) zap.Field {
 // string `labels.` and their value type set to StringType. It then wraps those
 // key/value pairs in a top-level `labels` namespace.
 func Labels(fields ...zap.Field) zap.Field {
-	lbls := newLabels()
+	lbls := labels{}
 
-	lbls.mutex.Lock()
 	for i := range fields {
 		if isLabelField(fields[i]) {
-			lbls.store[strings.Replace(fields[i].Key, "labels.", "", 1)] = fields[i].String
+			lbls[strings.Replace(fields[i].Key, "labels.", "", 1)] = fields[i].String
 		}
 	}
-	lbls.mutex.Unlock()
 
 	return labelsField(lbls)
 }
@@ -39,31 +36,16 @@ func isLabelField(field zap.Field) bool {
 	return strings.HasPrefix(field.Key, "labels.") && field.Type == zapcore.StringType
 }
 
-func labelsField(l *labels) zap.Field {
-	return zap.Object("labels", l)
+func labelsField(l map[string]string) zap.Field {
+	return zap.Object("labels", labels(l))
 }
 
-type labels struct {
-	store map[string]string
-	mutex *sync.RWMutex
-}
-
-func newLabels() *labels {
-	return &labels{store: map[string]string{}, mutex: &sync.RWMutex{}}
-}
-
-func (l *labels) Add(key, value string) {
-	l.mutex.Lock()
-	l.store[key] = value
-	l.mutex.Unlock()
-}
+type labels map[string]string
 
 func (l labels) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	l.mutex.RLock()
-	for k, v := range l.store {
+	for k, v := range l {
 		enc.AddString(k, v)
 	}
-	l.mutex.RUnlock()
 
 	return nil
 }

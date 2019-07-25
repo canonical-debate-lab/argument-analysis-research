@@ -1,8 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
-load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_push", "container_load")
-load("@io_bazel_rules_docker//docker:docker.bzl", "docker_bundle")
-load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,15 +9,15 @@ go_library(
     importpath = "github.com/canonical-debate-lab/argument-analysis-research/cmd/linker",
     visibility = ["//visibility:private"],
     deps = [
-        "//pkg/document:go_default_library",
+        "//pkg/api:go_default_library",
         "//pkg/linker:go_default_library",
+        "//pkg/linker/api:go_default_library",
         "//pkg/linker/async:go_default_library",
         "//pkg/linker/storage:go_default_library",
-        "//vendor/bitbucket.org/seibert-media/events/pkg/api:go_default_library",
-        "//vendor/bitbucket.org/seibert-media/events/pkg/service:go_default_library",
-        "//vendor/github.com/pkg/errors:go_default_library",
-        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
-        "//vendor/go.uber.org/zap:go_default_library",
+        "//pkg/service:go_default_library",
+        "@com_github_go_chi_chi//:go_default_library",
+        "@com_github_seibert_media_golibs//log:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
     ],
 )
 
@@ -47,12 +44,12 @@ load(
 
 manifest(
     name = "dpl",
-    template = "//k8s:deploy-linker.yaml",
+    template = "//defaults/k8s:deploy-linker.yaml",
 )
 
 manifest(
     name = "svc",
-    template = "//k8s:service.yaml",
+    template = "//defaults/k8s:service.yaml",
 )
 
 k8s_deploy(

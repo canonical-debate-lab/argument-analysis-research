@@ -6,14 +6,8 @@ kt_jvm_library(
     name = "code",
     srcs = glob(["main/kotlin/**/*.kt"]),
     deps = [
-        "//3rdparty/jvm/com/fasterxml/jackson/core:jackson_annotations",
-        "//3rdparty/jvm/com/fasterxml/jackson/core:jackson_core",
-        "//3rdparty/jvm/com/fasterxml/jackson/core:jackson_databind",
-        "//3rdparty/jvm/com/fasterxml/jackson/module:jackson_module_kotlin",
-        "//3rdparty/jvm/org/jetbrains/kotlin:kotlin_reflect",
-        "//3rdparty/jvm/org/jetbrains/kotlin:kotlin_stdlib",
         "//lib:adw",
-        "@appdeps//:compile",
+        "@maven//:io_javalin_javalin",
     ],
 )
 
@@ -57,12 +51,12 @@ load(
 
 manifest(
     name = "dpl",
-    template = "//k8s:deploy-adw.yaml",
+    template = "//defaults/k8s:deploy-adw.yaml",
 )
 
 manifest(
     name = "svc",
-    template = "//k8s:service-adw.yaml",
+    template = "//defaults/k8s:service-adw.yaml",
 )
 
 k8s_deploy(
@@ -73,7 +67,7 @@ k8s_deploy(
 k8s_deploy(
     name = "deployment",
     images = {
-        "adwv2:dev": ":image",
+        ":dev": ":image",
     },
     template = ":dpl",
 )

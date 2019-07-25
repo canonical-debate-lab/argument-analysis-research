@@ -6,9 +6,9 @@ go_library(
     importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/rater",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/pkg/errors:go_default_library",
-        "//vendor/github.com/seibert-media/golibs/log:go_default_library",
-        "//vendor/github.com/sethgrid/pester:go_default_library",
-        "//vendor/go.uber.org/zap:go_default_library",
+        "@com_github_pkg_errors//:go_default_library",
+        "@com_github_seibert_media_golibs//log:go_default_library",
+        "@com_github_sethgrid_pester//:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
     ],
 )

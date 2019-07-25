@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "error.go",
+        "handler.go",
+        "server.go",
+    ],
+    importpath = "github.com/canonical-debate-lab/argument-analysis-research/pkg/api",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/api/middlewares:go_default_library",
+        "@com_github_go_chi_chi//:go_default_library",
+        "@com_github_go_chi_chi//middleware:go_default_library",
+        "@com_github_pkg_errors//:go_default_library",
+        "@com_github_seibert_media_golibs//log:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

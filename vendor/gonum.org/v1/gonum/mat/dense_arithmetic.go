@@ -300,20 +300,21 @@ func (m *Dense) Mul(a, b Matrix) {
 	// temporary memory.
 	// C = A^T * B = (B^T * A)^T
 	// C^T = B^T * A.
-	if aUrm, ok := aU.(RawMatrixer); ok {
-		amat := aUrm.RawMatrix()
+	if aU, ok := aU.(RawMatrixer); ok {
+		amat := aU.RawMatrix()
 		if restore == nil {
 			m.checkOverlap(amat)
 		}
-		if bUrm, ok := bU.(RawMatrixer); ok {
-			bmat := bUrm.RawMatrix()
+		switch bU := bU.(type) {
+		case RawMatrixer:
+			bmat := bU.RawMatrix()
 			if restore == nil {
 				m.checkOverlap(bmat)
 			}
 			blas64.Gemm(aT, bT, 1, amat, bmat, 0, m.mat)
 			return
-		}
-		if bU, ok := bU.(RawSymmetricer); ok {
+
+		case RawSymmetricer:
 			bmat := bU.RawSymmetric()
 			if aTrans {
 				c := getWorkspace(ac, ar, false)
@@ -324,8 +325,8 @@ func (m *Dense) Mul(a, b Matrix) {
 			}
 			blas64.Symm(blas.Right, 1, bmat, amat, 0, m.mat)
 			return
-		}
-		if bU, ok := bU.(RawTriangular); ok {
+
+		case RawTriangular:
 			// Trmm updates in place, so copy aU first.
 			bmat := bU.RawTriangular()
 			if aTrans {
@@ -345,8 +346,8 @@ func (m *Dense) Mul(a, b Matrix) {
 			m.Copy(a)
 			blas64.Trmm(blas.Right, bT, 1, bmat, m.mat)
 			return
-		}
-		if bU, ok := bU.(*VecDense); ok {
+
+		case *VecDense:
 			m.checkOverlap(bU.asGeneral())
 			bvec := bU.RawVector()
 			if bTrans {
@@ -369,12 +370,13 @@ func (m *Dense) Mul(a, b Matrix) {
 			return
 		}
 	}
-	if bUrm, ok := bU.(RawMatrixer); ok {
-		bmat := bUrm.RawMatrix()
+	if bU, ok := bU.(RawMatrixer); ok {
+		bmat := bU.RawMatrix()
 		if restore == nil {
 			m.checkOverlap(bmat)
 		}
-		if aU, ok := aU.(RawSymmetricer); ok {
+		switch aU := aU.(type) {
+		case RawSymmetricer:
 			amat := aU.RawSymmetric()
 			if bTrans {
 				c := getWorkspace(bc, br, false)
@@ -385,8 +387,8 @@ func (m *Dense) Mul(a, b Matrix) {
 			}
 			blas64.Symm(blas.Left, 1, amat, bmat, 0, m.mat)
 			return
-		}
-		if aU, ok := aU.(RawTriangular); ok {
+
+		case RawTriangular:
 			// Trmm updates in place, so copy bU first.
 			amat := aU.RawTriangular()
 			if bTrans {
@@ -406,8 +408,8 @@ func (m *Dense) Mul(a, b Matrix) {
 			m.Copy(b)
 			blas64.Trmm(blas.Left, aT, 1, amat, m.mat)
 			return
-		}
-		if aU, ok := aU.(*VecDense); ok {
+
+		case *VecDense:
 			m.checkOverlap(aU.asGeneral())
 			avec := aU.RawVector()
 			if aTrans {
@@ -504,12 +506,13 @@ func (m *Dense) Exp(a Matrix) {
 	a1.Copy(a)
 	v := getWorkspace(r, r, true)
 	vraw := v.RawMatrix()
-	vvec := blas64.Vector{Inc: 1, Data: vraw.Data}
+	n := r * r
+	vvec := blas64.Vector{N: n, Inc: 1, Data: vraw.Data}
 	defer putWorkspace(v)
 
 	u := getWorkspace(r, r, true)
 	uraw := u.RawMatrix()
-	uvec := blas64.Vector{Inc: 1, Data: uraw.Data}
+	uvec := blas64.Vector{N: n, Inc: 1, Data: uraw.Data}
 	defer putWorkspace(u)
 
 	a2 := getWorkspace(r, r, false)
@@ -525,7 +528,7 @@ func (m *Dense) Exp(a Matrix) {
 		// this is not as horrible as it looks.
 		p := getWorkspace(r, r, true)
 		praw := p.RawMatrix()
-		pvec := blas64.Vector{Inc: 1, Data: praw.Data}
+		pvec := blas64.Vector{N: n, Inc: 1, Data: praw.Data}
 		defer putWorkspace(p)
 
 		for k := 0; k < r; k++ {
@@ -537,8 +540,8 @@ func (m *Dense) Exp(a Matrix) {
 		a2.Mul(a1, a1)
 		for j := 0; j <= i; j++ {
 			p.Mul(p, a2)
-			blas64.Axpy(r*r, t.b[2*j+2], pvec, vvec)
-			blas64.Axpy(r*r, t.b[2*j+3], pvec, uvec)
+			blas64.Axpy(t.b[2*j+2], pvec, vvec)
+			blas64.Axpy(t.b[2*j+3], pvec, uvec)
 		}
 		u.Mul(a1, u)
 
@@ -573,43 +576,43 @@ func (m *Dense) Exp(a Matrix) {
 		i.set(j, j, 1)
 	}
 	iraw := i.RawMatrix()
-	ivec := blas64.Vector{Inc: 1, Data: iraw.Data}
+	ivec := blas64.Vector{N: n, Inc: 1, Data: iraw.Data}
 	defer putWorkspace(i)
 
 	a2raw := a2.RawMatrix()
-	a2vec := blas64.Vector{Inc: 1, Data: a2raw.Data}
+	a2vec := blas64.Vector{N: n, Inc: 1, Data: a2raw.Data}
 
 	a4 := getWorkspace(r, r, false)
 	a4raw := a4.RawMatrix()
-	a4vec := blas64.Vector{Inc: 1, Data: a4raw.Data}
+	a4vec := blas64.Vector{N: n, Inc: 1, Data: a4raw.Data}
 	defer putWorkspace(a4)
 	a4.Mul(a2, a2)
 
 	a6 := getWorkspace(r, r, false)
 	a6raw := a6.RawMatrix()
-	a6vec := blas64.Vector{Inc: 1, Data: a6raw.Data}
+	a6vec := blas64.Vector{N: n, Inc: 1, Data: a6raw.Data}
 	defer putWorkspace(a6)
 	a6.Mul(a2, a4)
 
 	// V = A_6(b_12*A_6 + b_10*A_4 + b_8*A_2) + b_6*A_6 + b_4*A_4 + b_2*A_2 +b_0*I
-	blas64.Axpy(r*r, b[12], a6vec, vvec)
-	blas64.Axpy(r*r, b[10], a4vec, vvec)
-	blas64.Axpy(r*r, b[8], a2vec, vvec)
+	blas64.Axpy(b[12], a6vec, vvec)
+	blas64.Axpy(b[10], a4vec, vvec)
+	blas64.Axpy(b[8], a2vec, vvec)
 	v.Mul(v, a6)
-	blas64.Axpy(r*r, b[6], a6vec, vvec)
-	blas64.Axpy(r*r, b[4], a4vec, vvec)
-	blas64.Axpy(r*r, b[2], a2vec, vvec)
-	blas64.Axpy(r*r, b[0], ivec, vvec)
+	blas64.Axpy(b[6], a6vec, vvec)
+	blas64.Axpy(b[4], a4vec, vvec)
+	blas64.Axpy(b[2], a2vec, vvec)
+	blas64.Axpy(b[0], ivec, vvec)
 
 	// U = A(A_6(b_13*A_6 + b_11*A_4 + b_9*A_2) + b_7*A_6 + b_5*A_4 + b_2*A_3 +b_1*I)
-	blas64.Axpy(r*r, b[13], a6vec, uvec)
-	blas64.Axpy(r*r, b[11], a4vec, uvec)
-	blas64.Axpy(r*r, b[9], a2vec, uvec)
+	blas64.Axpy(b[13], a6vec, uvec)
+	blas64.Axpy(b[11], a4vec, uvec)
+	blas64.Axpy(b[9], a2vec, uvec)
 	u.Mul(u, a6)
-	blas64.Axpy(r*r, b[7], a6vec, uvec)
-	blas64.Axpy(r*r, b[5], a4vec, uvec)
-	blas64.Axpy(r*r, b[3], a2vec, uvec)
-	blas64.Axpy(r*r, b[1], ivec, uvec)
+	blas64.Axpy(b[7], a6vec, uvec)
+	blas64.Axpy(b[5], a4vec, uvec)
+	blas64.Axpy(b[3], a2vec, uvec)
+	blas64.Axpy(b[1], ivec, uvec)
 	u.Mul(u, a1)
 
 	// Use i as a workspace here and
@@ -757,17 +760,16 @@ func (m *Dense) Apply(fn func(i, j int, v float64) float64, a Matrix) {
 	}
 }
 
-// RankOne performs a rank-one update to the matrix a and stores the result
-// in the receiver. If a is zero, see Outer.
-//  m = a + alpha * x * y'
+// RankOne performs a rank-one update to the matrix a with the vectors x and
+// y, where x and y are treated as column vectors. The result is stored in the
+// receiver. If a is zero, see Outer.
+//  m = a + alpha * x * y^T
 func (m *Dense) RankOne(a Matrix, alpha float64, x, y Vector) {
 	ar, ac := a.Dims()
-	xr, xc := x.Dims()
-	if xr != ar || xc != 1 {
+	if x.Len() != ar {
 		panic(ErrShape)
 	}
-	yr, yc := y.Dims()
-	if yr != ac || yc != 1 {
+	if y.Len() != ac {
 		panic(ErrShape)
 	}
 
@@ -782,15 +784,17 @@ func (m *Dense) RankOne(a Matrix, alpha float64, x, y Vector) {
 	fast := true
 	xU, _ := untranspose(x)
 	if rv, ok := xU.(RawVectorer); ok {
+		r, c := xU.Dims()
 		xmat = rv.RawVector()
-		m.checkOverlap((&VecDense{mat: xmat, n: x.Len()}).asGeneral())
+		m.checkOverlap(generalFromVector(xmat, r, c))
 	} else {
 		fast = false
 	}
 	yU, _ := untranspose(y)
 	if rv, ok := yU.(RawVectorer); ok {
+		r, c := yU.Dims()
 		ymat = rv.RawVector()
-		m.checkOverlap((&VecDense{mat: ymat, n: y.Len()}).asGeneral())
+		m.checkOverlap(generalFromVector(ymat, r, c))
 	} else {
 		fast = false
 	}
@@ -812,22 +816,12 @@ func (m *Dense) RankOne(a Matrix, alpha float64, x, y Vector) {
 	}
 }
 
-// Outer calculates the outer product of the column vectors x and y,
-// and stores the result in the receiver.
-//  m = alpha * x * y'
+// Outer calculates the outer product of the vectors x and y, where x and y
+// are treated as column vectors, and stores the result in the receiver.
+//  m = alpha * x * y^T
 // In order to update an existing matrix, see RankOne.
 func (m *Dense) Outer(alpha float64, x, y Vector) {
-	xr, xc := x.Dims()
-	if xc != 1 {
-		panic(ErrShape)
-	}
-	yr, yc := y.Dims()
-	if yc != 1 {
-		panic(ErrShape)
-	}
-
-	r := xr
-	c := yr
+	r, c := x.Len(), y.Len()
 
 	// Copied from reuseAs with use replaced by useZeroed
 	// and a final zero of the matrix elements if we pass
@@ -855,16 +849,17 @@ func (m *Dense) Outer(alpha float64, x, y Vector) {
 	fast := true
 	xU, _ := untranspose(x)
 	if rv, ok := xU.(RawVectorer); ok {
+		r, c := xU.Dims()
 		xmat = rv.RawVector()
-		m.checkOverlap((&VecDense{mat: xmat, n: x.Len()}).asGeneral())
-
+		m.checkOverlap(generalFromVector(xmat, r, c))
 	} else {
 		fast = false
 	}
 	yU, _ := untranspose(y)
 	if rv, ok := yU.(RawVectorer); ok {
+		r, c := yU.Dims()
 		ymat = rv.RawVector()
-		m.checkOverlap((&VecDense{mat: ymat, n: y.Len()}).asGeneral())
+		m.checkOverlap(generalFromVector(ymat, r, c))
 	} else {
 		fast = false
 	}

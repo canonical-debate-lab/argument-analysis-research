@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/canonical-debate-lab/argument-analysis-research/pkg/document"
+	"github.com/canonical-debate-lab/argument-analysis-research/pkg/api"
+	"github.com/canonical-debate-lab/argument-analysis-research/pkg/service"
 
-	"bitbucket.org/seibert-media/events/pkg/api"
-	"bitbucket.org/seibert-media/events/pkg/service"
 	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 	"github.com/seibert-media/golibs/log"
@@ -27,7 +27,7 @@ type Spec struct {
 
 func main() {
 	var svc Spec
-	ctx := service.Init(svcKey, svcName, &svc)
+	ctx := service.Init(svcKey, &svc)
 	defer service.Defer(ctx)
 
 	srv := api.New(":8080", svc.Debug)
