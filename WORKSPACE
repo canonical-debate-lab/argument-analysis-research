@@ -149,6 +149,9 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
         "io.javalin:javalin:2.3.0",
+        "com.fasterxml.jackson.core:jackson-databind:2.9.6",
+        "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1",
+        "org.slf4j:slf4j-api:1.7.25",
         "org.slf4j:slf4j-simple:1.7.25",
     ],
     repositories = [

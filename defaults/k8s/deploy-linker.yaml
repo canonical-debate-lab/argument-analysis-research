@@ -36,9 +36,14 @@ spec:
           value: argument-analysis-research
         - name: IS_PROD
           value: "false"
+        - name: METRICSPORT
+          value: "8081"
         ports:
         - name: http
           containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 8081
           protocol: TCP
         # resources:
         #   limits:

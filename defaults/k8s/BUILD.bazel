@@ -7,8 +7,10 @@ exports_files([
     "deploy-adw.yaml",
     "service.yaml",
     "service-adw.yaml",
-    "pv-adw.yaml",
-    "pvc-adw.yaml",
+    "pv-adw-config.yaml",
+    "pv-adw-resources.yaml",
+    "pvc-adw-config.yaml",
+    "pvc-adw-resources.yaml",
     "pvc-linker.yaml",
 ])
 
@@ -29,8 +31,13 @@ k8s_deploy(
 )
 
 manifest(
-    name = "manifest_pvc-adw",
-    template = "pvc-adw.yaml",
+    name = "manifest_pvc-adw-config",
+    template = "pvc-adw-config.yaml",
+)
+
+manifest(
+    name = "manifest_pvc-adw-resources",
+    template = "pvc-adw-resources.yaml",
 )
 
 manifest(
@@ -39,18 +46,33 @@ manifest(
 )
 
 manifest(
-    name = "manifest_pv-adw",
-    template = "pv-adw.yaml",
+    name = "manifest_pv-adw-config",
+    template = "pv-adw-config.yaml",
+)
+
+manifest(
+    name = "manifest_pv-adw-resources",
+    template = "pv-adw-resources.yaml",
 )
 
 k8s_deploy(
-    name = "dev_pvc-adw",
-    template = ":manifest_pvc-adw",
+    name = "dev_pvc-adw-resources",
+    template = ":manifest_pvc-adw-resources",
 )
 
 k8s_deploy(
-    name = "dev_pv-adw",
-    template = ":manifest_pv-adw",
+    name = "dev_pv-adw-resources",
+    template = ":manifest_pv-adw-resources",
+)
+
+k8s_deploy(
+    name = "dev_pvc-adw-config",
+    template = ":manifest_pvc-adw-config",
+)
+
+k8s_deploy(
+    name = "dev_pv-adw-config",
+    template = ":manifest_pv-adw-config",
 )
 
 k8s_deploy(
@@ -66,4 +88,16 @@ manifest(
 k8s_deploy(
     name = "dev_pv-linker",
     template = ":manifest_pv-linker",
+)
+
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+
+k8s_objects(
+    name = "dev_pv_pvc_adw",
+    objects = [
+        ":dev_pvc-adw-config",
+        ":dev_pvc-adw-resources",
+        ":dev_pv-adw-config",
+        ":dev_pv-adw-resources",
+    ],
 )

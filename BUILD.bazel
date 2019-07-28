@@ -21,8 +21,7 @@ k8s_objects(
     name = "k8s_dev",
     objects = [
         "//defaults/k8s:dev_ingress",
-        "//defaults/k8s:dev_pvc-adw",
-        "//defaults/k8s:dev_pv-adw",
+        "//defaults/k8s:dev_pv_pvc_adw",
         "//defaults/k8s:dev_pvc-linker",
         "//defaults/k8s:dev_pv-linker",
         "//cmd/segmenter:dev",

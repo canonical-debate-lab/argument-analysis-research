@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adw-data-config-pvc
+  labels:
+    component: "adw"
+    subComponent: "config"
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      component: adw
+      subComponent: "config"

@@ -13,8 +13,8 @@ import java.io.File
 
 
 fun main(args: Array<String>) {
-    val path = File(".").absolutePath
-    System.out.println("running at path: $path")
+    val localDir = File(".").absolutePath
+    System.out.println("running at path: $localDir")
 
     val app = Javalin.create().start(8080)
 

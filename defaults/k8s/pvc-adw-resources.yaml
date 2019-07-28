@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: adw-data-pvc
+  name: adw-data-resources-pvc
   labels:
     component: "adw"
+    subComponent: "resources"
 spec:
   accessModes:
     - ReadOnlyMany
@@ -13,3 +14,4 @@ spec:
   selector:
     matchLabels:
       component: adw
+      subComponent: "resources"

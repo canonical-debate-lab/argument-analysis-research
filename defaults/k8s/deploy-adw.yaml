@@ -48,14 +48,16 @@ spec:
         #     cpu: 1
         #     memory: 2G
         volumeMounts:
-          - mountPath: /app/src/image.binary.runfiles/research/config
-            subPath: config
-            name: data
-          - mountPath: /app/src/image.binary.runfiles/research/resources
-            subPath: resources
-            name: data
+          - mountPath: /config
+            name: config
+          - mountPath: /resources
+            name: resources
       volumes:
-      - name: data
+      - name: config
         persistentVolumeClaim:
-          claimName: adw-data-pvc
+          claimName: adw-data-config-pvc
+          readOnly: true 
+      - name: resources
+        persistentVolumeClaim:
+          claimName: adw-data-resources-pvc
           readOnly: true 

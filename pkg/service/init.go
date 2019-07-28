@@ -114,6 +114,7 @@ func Init(key string, spec Spec) (ctx context.Context) {
 }
 
 func metricsServer(ctx context.Context, port int, pe *prometheus.Exporter) {
+	log.From(ctx).Info("serving metrics", zap.Int("port", port))
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", pe)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux); err != nil {
